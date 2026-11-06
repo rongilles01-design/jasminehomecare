@@ -1,2 +1,0 @@
-JASMINE_DEPLOY_TEST_2026-11-06
-This is a harmless deployment verification file. It does not affect the visible website.
