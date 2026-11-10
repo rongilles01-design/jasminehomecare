@@ -25,7 +25,7 @@ This PR changes source code only. Do not merge until the preview is reviewed.
 
 ## Code/behavior notes
 - Form is plain HTML: name `jasmine-quote`, `data-netlify="true"`, POST, and action `/thank-you.html`.
-- Hidden `form-name` is included. Netlify may also inject this during post-processing.
+- Netlify's static HTML processing injects the hidden `form-name` field during deployment.
 - Honeypot: `netlify-honeypot="bot-field"` and matching hidden field. No captcha dependency.
 - The browser no longer launches a mail app or relies on JavaScript to submit inquiries.
 - No card data or other sensitive personal details should be requested.
