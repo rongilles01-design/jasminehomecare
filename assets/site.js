@@ -1,1 +1,71 @@
-(()=>{'use strict';const toggle=document.querySelector('.mobile-toggle'),nav=document.querySelector('.nav-links');if(toggle&&nav){toggle.addEventListener('click',()=>{const open=nav.classList.toggle('is-open');toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Close navigation':'Open navigation')});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('is-open');toggle.setAttribute('aria-expanded','false')}));document.addEventListener('keydown',e=>{if(e.key==='Escape'){nav.classList.remove('is-open');toggle.setAttribute('aria-expanded','false')}})}document.querySelectorAll('img[data-fallback]').forEach(img=>img.addEventListener('error',()=>{if(img.dataset.fallback&&img.getAttribute('src')!==img.dataset.fallback){img.setAttribute('src',img.dataset.fallback)}}));const filters=document.querySelectorAll('[data-filter]');if(filters.length){filters.forEach(btn=>btn.addEventListener('click',()=>{const val=btn.dataset.filter;filters.forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));document.querySelectorAll('[data-category]').forEach(card=>card.hidden=val!=='all'&&card.dataset.category!==val)}))}const form=document.getElementById('quote-form');if(form){const requested=new URLSearchParams(location.search).get('service');if(requested){const serviceSelect=form.querySelector('[name=service]');if(serviceSelect&&Array.from(serviceSelect.options).some(o=>o.value===requested))serviceSelect.value=requested;}form.addEventListener('submit',e=>{e.preventDefault();if(!form.reportValidity())return;const d=new FormData(form),g=k=>String(d.get(k)||'').trim();const subject=`Jasmine website inquiry: ${g('service')}`,body=`New website inquiry for Jasmine Interior Design & Housekeeping\n\nName: ${g('name')}\nEmail: ${g('email')}\nPhone: ${g('phone')}\nService: ${g('service')}\nCity / ZIP: ${g('location')}\nPreferred timing: ${g('timeline')}\n\nProject details:\n${g('details')}\n\nSent from jasminehomecare.net`;const mailto=`mailto:Info@jasminehomecare.net?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;const status=document.getElementById('form-status');if(status)status.textContent='Your email app should open with the request. Please press Send there to complete your inquiry. If nothing opens, use the Copy request button or email us directly.';window.location.href=mailto});const copy=document.getElementById('copy-request');if(copy)copy.addEventListener('click',async()=>{if(!form.reportValidity())return;const d=new FormData(form);const text=['Jasmine website quote request',...['name','email','phone','service','location','timeline','details'].map(k=>`${k}: ${d.get(k)||''}`)].join('\n');try{await navigator.clipboard.writeText(text);document.getElementById('form-status').textContent='Request copied. Paste it into an email to Info@jasminehomecare.net.'}catch{document.getElementById('form-status').textContent='Copy is unavailable in this browser. Please email Info@jasminehomecare.net directly.'}})}})();
+(() => {
+  'use strict';
+
+  // Mobile navigation and keyboard access.
+  const toggle = document.querySelector('.mobile-toggle');
+  const nav = document.querySelector('.nav-links');
+  if (toggle && nav) {
+    const closeMenu = () => {
+      nav.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Open navigation');
+    };
+    toggle.addEventListener('click', () => {
+      const isOpen = nav.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', String(isOpen));
+      toggle.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
+    });
+    nav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeMenu();
+    });
+  }
+
+  // Fallback illustrations are shown when a stock image fails to load.
+  document.querySelectorAll('img[data-fallback]').forEach(img => {
+    img.addEventListener('error', () => {
+      if (img.dataset.fallback && img.getAttribute('src') !== img.dataset.fallback) {
+        img.setAttribute('src', img.dataset.fallback);
+      }
+    });
+  });
+
+  // Gallery category filters.
+  const filters = document.querySelectorAll('[data-filter]');
+  filters.forEach(btn => btn.addEventListener('click', () => {
+    const category = btn.dataset.filter;
+    filters.forEach(filter => filter.setAttribute('aria-pressed', String(filter === btn)));
+    document.querySelectorAll('[data-category]').forEach(card => {
+      card.hidden = category !== 'all' && card.dataset.category !== category;
+    });
+  }));
+
+  // Preserve preselected services, e.g. contact.html?service=Housekeeping.
+  // The HTML form is submitted natively to Netlify (no mailto or JS interception).
+  const form = document.getElementById('quote-form');
+  if (form) {
+    const requested = new URLSearchParams(window.location.search).get('service');
+    const serviceSelect = form.querySelector('[name="service"]');
+    if (requested && serviceSelect &&
+        Array.from(serviceSelect.options).some(option => option.value === requested)) {
+      serviceSelect.value = requested;
+    }
+  }
+
+  // Persistent, accessible mobile actions throughout the website.
+  const actions = document.createElement('nav');
+  actions.className = 'mobile-contact-bar';
+  actions.setAttribute('aria-label', 'Quick contact');
+  const call = document.createElement('a');
+  call.href = 'tel:+16784041756';
+  call.className = 'mobile-contact-bar__call';
+  call.textContent = 'Call Now';
+  call.setAttribute('aria-label', 'Call Jasmine at (678) 404-1756');
+  const quote = document.createElement('a');
+  quote.href = form ? '#quote-form' : '/contact.html';
+  quote.className = 'mobile-contact-bar__quote';
+  quote.textContent = 'Get a Quote';
+  quote.setAttribute('aria-label', 'Request a Jasmine quote');
+  actions.append(call, quote);
+  document.body.appendChild(actions);
+})();
