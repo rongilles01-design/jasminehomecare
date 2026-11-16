@@ -50,6 +50,13 @@
         Array.from(serviceSelect.options).some(option => option.value === requested)) {
       serviceSelect.value = requested;
     }
+    const params = new URLSearchParams(window.location.search);
+    const details = form.querySelector('[name="details"]');
+    const pack = (params.get('package') || '').slice(0,120);
+    const estimate = (params.get('estimate') || '').slice(0,1200);
+    if (details && !details.value && (pack || estimate)) {
+      details.value = [pack ? 'Interested in: ' + pack : '', estimate, 'Additional project details: '].filter(Boolean).join('\n\n');
+    }
   }
 
   // Persistent, accessible mobile actions throughout the website.
